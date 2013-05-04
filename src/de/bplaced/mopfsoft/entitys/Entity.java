@@ -2,30 +2,34 @@ package de.bplaced.mopfsoft.entitys;
 
 import org.newdawn.slick.Image;
 
+import de.bplaced.mopfsoft.blocks.Block;
+
 public abstract class Entity {
 	
 	private int xOld;
 	private int yOld;
 	private int y;
 	private int x;
-	private final int width;
-	private final int height;
 	@SuppressWarnings("unused")
-	private final int[][] gamefield;
+	private final Block[][] gamefield;
 	
-	public Entity(int x, int y, int width, int height, int[][] gamefield) {
+	public Entity(int x, int y, Block[][] gamefield) {
 		this.x = x;
 		this.y = y;
-		this.width = width;
-		this.height = height;
 		this.gamefield = gamefield;
 		
 		this.xOld = x;
 		this.yOld = y;
 	}
-
-
 	
+	@Override
+	public String toString() {
+		return getId()+":"+x+":"+y;
+	}
+
+
+	public abstract int getHeight();
+	public abstract int getWidth();
 	public abstract int getId();
 	public abstract Image getImage();
 	
@@ -40,12 +44,6 @@ public abstract class Entity {
 	}
 	public int getY() {
 		return this.y;
-	}
-	public int getWidth() {
-		return width;
-	}
-	public int getHeight() {
-		return height;
 	}
 	public void set(int x, int y) {
 		this.x = x;
