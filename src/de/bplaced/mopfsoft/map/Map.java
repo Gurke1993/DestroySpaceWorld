@@ -10,21 +10,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-
 import de.bplaced.mopfsoft.blocks.Block;
 import de.bplaced.mopfsoft.entitys.Entity;
 import de.bplaced.mopfsoft.entitys.Player;
 
 public class Map {
 	
-	private final Image previewImage;
 	protected final Block[][] gamefield;
 	private final String mapName;
 	private final String mapDescription;
 	protected final List<Entity> entitys = new ArrayList<Entity>();
-	private final File previewImagePath;
+	private File previewImagePath;
 	
 
 	public Map (String path) {
@@ -46,14 +42,7 @@ public class Map {
 		}
 		
 		
-		// Set path to previewImage
 		this.previewImagePath = new File(file.getPath().split("\\.")[0] + ".gif");
-		Image previewImageTemp = null;
-		try {
-			previewImageTemp = new Image(file.getPath().split("\\.")[0] + ".gif");
-		} catch (SlickException e1) {
-		}
-		previewImage = previewImageTemp;
 		
 		
 		//Initialize Temp variables
@@ -128,12 +117,6 @@ public class Map {
 		return this.mapDescription;
 	}
 	
-	/** Returns the preview image of the map
-	 * @return
-	 */
-	public Image getPreviewImage() {
-		return this.previewImage;
-	}
 	
 	/** Changes the block at the specified coordinates to a new block of the id
 	 * @param x
@@ -249,11 +232,12 @@ public class Map {
 		return players;
 	}
 
-	public File getPreviewImageFile() {
-		return this.previewImagePath;
-	}
 
 	public List<Entity> getEntitys() {
 		return this.entitys;
+	}
+
+	public File getPreviewImageFile() {
+		return this.previewImagePath;
 	}
 }
