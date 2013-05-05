@@ -45,12 +45,12 @@ public abstract class Block {
 	
 	public abstract Color getColor();
 	
-	public abstract int getId();
+	public abstract int getBid();
 	
 	@SuppressWarnings("unchecked")
-	public static Block getNewBlock(int x, int y, int id) {
-		if (!blockMap.containsKey(id)) {
-			System.out.println("[ERROR] Block is not registered in blockmap: "+id);
+	public static Block getNewBlock(int x, int y, int bid) {
+		if (!blockMap.containsKey(bid)) {
+			System.out.println("[ERROR] Block is not registered in blockmap: "+bid);
 			return new Air(x,y);
 		}
 		
@@ -65,7 +65,7 @@ public abstract class Block {
 		
 	    try {
 	    	@SuppressWarnings("rawtypes")
-			Class blockDef = Class.forName("de.bplaced.mopfsoft.blocks."+blockMap.get(id));
+			Class blockDef = Class.forName("de.bplaced.mopfsoft.blocks."+blockMap.get(bid));
 	    	argsConstructor = blockDef.getConstructor(argsClass);
 
 	    	block = (Block)argsConstructor.newInstance(args);

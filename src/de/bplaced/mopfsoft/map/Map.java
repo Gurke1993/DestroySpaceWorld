@@ -174,8 +174,8 @@ public class Map {
 			writer.write(mapDescription+System.getProperty("line.separator"));
 			
 			//Write Player data
-			for (Player player: getPlayers()) {
-				writer.write(player.toString()+System.getProperty("line.separator"));
+			for (Entity entity: getEntitys()) {
+				writer.write(entity+System.getProperty("line.separator"));
 			}
 			
 			
@@ -183,7 +183,7 @@ public class Map {
 			for (int y = 0; y<gamefield[0].length; y++) {
 				for (int x = 0; x< gamefield.length; x++) {
 					if (x!=0) writer.write(":");
-					writer.write(gamefield[x][y].getId());
+					writer.write(gamefield[x][y].getBid());
 				}
 				writer.write(System.getProperty("line.separator"));
 			}

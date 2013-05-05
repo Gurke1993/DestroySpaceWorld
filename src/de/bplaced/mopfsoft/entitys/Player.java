@@ -6,16 +6,16 @@ import de.bplaced.mopfsoft.blocks.Block;
 
 public class Player extends ItemUser {
 
-	public Player(int x, int y, Block [][] gamefield) {
-		super(x, y, gamefield);
+	public Player(int id, int x, int y, Block [][] gamefield) {
+		super(id, x, y, gamefield);
 	}
 
-	public Player(String[] args, Block [][] gamefield) {
-		this(Integer.parseInt(args[0]),Integer.parseInt(args[1]),gamefield);
+	public Player(int id, String[] args, Block [][] gamefield) {
+		this(id, Integer.parseInt(args[0]),Integer.parseInt(args[1]),gamefield);
 	}
 
 	@Override
-	public int getId() {
+	public int getEid() {
 		return 1;
 	}
 

@@ -26,7 +26,7 @@ public class Air extends Block{
 	}
 
 	@Override
-	public int getId() {
+	public int getBid() {
 		return 0;
 	}
 

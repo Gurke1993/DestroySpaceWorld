@@ -29,7 +29,7 @@ public class Stone extends Massive{
 	}
 
 	@Override
-	public int getId() {
+	public int getBid() {
 		// TODO Auto-generated method stub
 		return 1;
 	}

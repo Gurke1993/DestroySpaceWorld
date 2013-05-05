@@ -12,13 +12,15 @@ import de.bplaced.mopfsoft.blocks.Block;
 public abstract class Entity {
 	
 	private static final Map<Integer,String> entityMap = setupEntityMap();
+	private final int id;
 	private int xOld;
 	private int yOld;
 	private int y;
 	private int x;
 	private final Block[][] gamefield;
 	
-	public Entity(int x, int y, Block[][] gamefield) {
+	public Entity(int id, int x, int y, Block[][] gamefield) {
+		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.gamefield = gamefield;
@@ -39,13 +41,13 @@ public abstract class Entity {
 
 	@Override
 	public String toString() {
-		return getId()+":"+x+":"+y;
+		return getId()+","+getEid()+","+x+","+y;
 	}
 
 
 	public abstract int getHeight();
 	public abstract int getWidth();
-	public abstract int getId();
+	public abstract int getEid();
 	
 	public abstract Image getImage();
 	
@@ -70,6 +72,10 @@ public abstract class Entity {
 	public void move(int x, int y) {
 		this.x += x;
 		this.y += y;
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 	
 	public boolean hasMoved() {
@@ -105,16 +111,16 @@ public abstract class Entity {
 	 */
 	private boolean isCollidingWithWorld() {
 		
-		if (gamefield[x][y].getId() != 0) {
+		if (gamefield[x][y].getBid() != 0) {
 			return true;
 		}
-		if (gamefield[x][y+getHeight()].getId() != 0) {
+		if (gamefield[x][y+getHeight()].getBid() != 0) {
 			return true;
 		}
-		if (gamefield[x+getWidth()][y].getId() != 0) {
+		if (gamefield[x+getWidth()][y].getBid() != 0) {
 			return true;
 		}
-		if (gamefield[x+getWidth()][y+getHeight()].getId() != 0) {
+		if (gamefield[x+getWidth()][y+getHeight()].getBid() != 0) {
 			return true;
 		}
 		
@@ -128,30 +134,30 @@ public abstract class Entity {
 	 * @return
 	 */
 	public static Entity getNewEntity(String[] args, Block[][] gamefield) {
-		return getNewEntity(Integer.parseInt(args[0]), Integer.parseInt(args[1]), gamefield, Integer.parseInt(args[2]));
+		return getNewEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[1]),gamefield);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Entity getNewEntity(int x, int y, Block[][] gamefield, int id) {
+	public static Entity getNewEntity(int id, int eid, int x, int y, Block[][] gamefield) {
 		Entity entity = null;
 
-		Object [] args = {x,y,gamefield};
+		Object [] args = {id,x,y,gamefield};
 		@SuppressWarnings("rawtypes")
-		Class[] argsClass = new Class[] { int.class, int.class, Block[][].class };
+		Class[] argsClass = new Class[] { int.class, int.class, int.class, Block[][].class };
 		
 		@SuppressWarnings("rawtypes")
 		Constructor argsConstructor;
 		
 	    try {
 	    	@SuppressWarnings("rawtypes")
-			Class blockDef = Class.forName("de.bplaced.mopfsoft.entitys."+entityMap.get(id));
+			Class blockDef = Class.forName("de.bplaced.mopfsoft.entitys."+entityMap.get(eid));
 	    	argsConstructor = blockDef.getConstructor(argsClass);
 	    	entity = (Entity)argsConstructor.newInstance(args);
 	      
 	      return entity;
 	      
 	    } catch (Exception e) {
-	      System.out.println("Could not create new Block from id!!");
+	      System.out.println("Could not create new Block from eid!!");
 	    }
 	    return null;
 	  }

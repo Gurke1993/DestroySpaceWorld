@@ -29,7 +29,7 @@ public class Dirt extends Massive{
 	}
 
 	@Override
-	public int getId() {
+	public int getBid() {
 		return 2;
 	}
 
