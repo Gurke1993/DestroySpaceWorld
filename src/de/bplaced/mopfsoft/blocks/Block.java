@@ -24,7 +24,7 @@ public abstract class Block {
 	private static Map<Integer, String> setupBlockMap() {
         Map<Integer, String> result = new HashMap<Integer, String>();
         
-        
+        result.put(0, "Air");
         result.put(1, "Stone");
         result.put(2, "Dirt");
         
@@ -49,6 +49,11 @@ public abstract class Block {
 	
 	@SuppressWarnings("unchecked")
 	public static Block getNewBlock(int x, int y, int id) {
+		if (!blockMap.containsKey(id)) {
+			System.out.println("[ERROR] Block is not registered in blockmap: "+id);
+			return new Air(x,y);
+		}
+		
 		Block block = null;
 
 		Object [] args = {x,y};
