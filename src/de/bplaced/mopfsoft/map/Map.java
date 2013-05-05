@@ -20,16 +20,17 @@ import de.bplaced.mopfsoft.entitys.Player;
 public class Map {
 	
 	private final Image previewImage;
-	private final Block[][] gamefield;
+	protected final Block[][] gamefield;
 	private final String mapName;
 	private final String mapDescription;
-	private final List<Entity> entitys = new ArrayList<Entity>();
+	protected final List<Entity> entitys = new ArrayList<Entity>();
 	private final File previewImagePath;
 	
 
 	public Map (String path) {
 		this(new File (path));
 	}
+	
 	
 	public Map (File file) {
 
