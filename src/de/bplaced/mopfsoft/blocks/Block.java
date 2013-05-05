@@ -64,7 +64,6 @@ public abstract class Block {
 	    	argsConstructor = blockDef.getConstructor(argsClass);
 
 	    	block = (Block)argsConstructor.newInstance(args);
-	      System.out.println("Block: " + block.getId());
 	      
 	      return block;
 	      

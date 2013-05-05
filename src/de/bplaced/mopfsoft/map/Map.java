@@ -14,6 +14,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import de.bplaced.mopfsoft.blocks.Block;
+import de.bplaced.mopfsoft.entitys.Entity;
 import de.bplaced.mopfsoft.entitys.Player;
 
 public class Map {
@@ -22,7 +23,7 @@ public class Map {
 	private final Block[][] gamefield;
 	private final String mapName;
 	private final String mapDescription;
-	private final List<Player> players = new ArrayList<Player>();
+	private final List<Entity> entitys = new ArrayList<Entity>();
 	private final File previewImagePath;
 	
 
@@ -78,7 +79,7 @@ public class Map {
 			//Read player data
 			String line;
 			while (!(line = reader.readLine()).equalsIgnoreCase("#")){
-				this.players.add(new Player(line.split(":"),gamefieldTemp));
+				this.entitys.add(Entity.getNewEntity(line.split(":"), gamefieldTemp));
 			}
 			
 			//Read gamefield data
@@ -168,7 +169,7 @@ public class Map {
 			writer.write(mapDescription+System.getProperty("line.separator"));
 			
 			//Write Player data
-			for (Player player: players) {
+			for (Player player: getPlayers()) {
 				writer.write(player.toString()+System.getProperty("line.separator"));
 			}
 			
@@ -232,16 +233,22 @@ public class Map {
 			}
 		}
 
-	public String[] getPlayerNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public List<Player> getPlayers() {
-		return this.players;
+		List <Player> players= new ArrayList<Player>();
+		
+		for (Entity entity: entitys) {
+			if (entity instanceof Player) {
+				players.add((Player)entity);
+			}
+		}
+		return players;
 	}
 
 	public File getPreviewImageFile() {
 		return this.previewImagePath;
+	}
+
+	public List<Entity> getEntitys() {
+		return this.entitys;
 	}
 }

@@ -43,5 +43,11 @@ public class Player extends ItemUser {
 		return 16;
 	}
 
+	@Override
+	public void resolveEntityCollisions() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
