@@ -31,6 +31,10 @@ public class Map {
 		this(new File (path));
 	}
 	
+	public Map() {
+		this(new File("maps/DefaultMap.map"));
+	}
+	
 	
 	public Map (File file) {
 
