@@ -48,6 +48,7 @@ public abstract class Entity {
 	public abstract int getHeight();
 	public abstract int getWidth();
 	public abstract int getEid();
+	public abstract void prepareImage();
 	
 	public abstract Image getImage();
 	
@@ -157,7 +158,8 @@ public abstract class Entity {
 	      return entity;
 	      
 	    } catch (Exception e) {
-	      System.out.println("Could not create new Block from eid!!");
+	    	e.printStackTrace();
+	      System.out.println("Could not create new Entity from eid!!"+id+" "+eid+" "+x+" "+y);
 	    }
 	    return null;
 	  }
