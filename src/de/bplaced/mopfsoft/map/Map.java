@@ -2,11 +2,13 @@ package de.bplaced.mopfsoft.map;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,27 +25,17 @@ public class Map {
 	private File previewImagePath;
 	
 
-	public Map (String path) {
-		this(new File (path));
-	}
-	
-	public Map() {
-		this(new File("maps/DefaultMap.map"));
-	}
-	
-	
-	public Map (File file) {
-
-
-		// If file does not exist, load default
-		if (!file.exists()) {
+	private Map (BufferedReader reader) {
+		
+		// If reader equals null load default map
+		if (reader == null) {
 			Map.copyDefaultMap();
-			file = new File("maps/DefaultMap.map");
+			try {
+				reader = new BufferedReader(new FileReader(new File("maps/DefaultMap.map")));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		
-		this.previewImagePath = new File(file.getPath().split("\\.")[0] + ".gif");
-		
 		
 		//Initialize Temp variables
 		String mapNameTemp = null, mapDescriptionTemp = null;
@@ -52,16 +44,14 @@ public class Map {
 		
 		// Start loading the map
 		try {
-			FileReader fr = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fr);
-
-
 			
 			//Read file information and process them
-			String topLine = reader.readLine();
+			String topLine;
+			while((topLine = reader.readLine()) == null) {
+			}
 			
-			int xMax = Integer.parseInt(topLine.split(":")[0]);
-			int yMax = Integer.parseInt(topLine.split(":")[1]);
+			int xMax = Integer.parseInt(topLine.split(";")[0]);
+			int yMax = Integer.parseInt(topLine.split(";")[1]);
 			gamefieldTemp = new Block[xMax][yMax];
 			
 			mapNameTemp = reader.readLine();
@@ -73,7 +63,7 @@ public class Map {
 			//Read player data
 			String line;
 			while (!(line = reader.readLine()).equalsIgnoreCase("#")){
-				this.entitys.add(Entity.getNewEntity(line.split(":"), gamefieldTemp));
+				this.entitys.add(Entity.getNewEntity(line.split(","), gamefieldTemp));
 			}
 			
 			//Read gamefield data
@@ -82,7 +72,7 @@ public class Map {
 			
 			while ((line = reader.readLine())!= null) {
 				x = 0;
-				for (String id: line.split(":")) {
+				for (String id: line.split(";")) {
 					gamefieldTemp[x][y] = Block.getNewBlock(x,y,Integer.parseInt(id));
 					x++;
 				}
@@ -91,15 +81,30 @@ public class Map {
 			
 			//Close readers
 			reader.close();
-			fr.close();
 			
 		} catch (Exception e) {
-			System.out.println("[ERROR] Could not load gamefield data in "+file.getName()+"!");
+			System.out.println("[ERROR] Could not load gamefield data!");
+			e.printStackTrace();
 		}
 		
 		this.mapDescription = mapDescriptionTemp;
 		this.mapName = mapNameTemp;
 		this.gamefield = gamefieldTemp;
+	}
+	
+	public Map (String mapData) {
+		this(new BufferedReader(new StringReader(mapData)));
+	}
+	
+	public Map() throws FileNotFoundException {
+		this(new File("maps/DefaultMap.map"));
+	}
+	
+	
+	public Map (File file) throws FileNotFoundException {
+		this(new BufferedReader(new FileReader(file)));
+		
+		this.previewImagePath = new File(file.getPath().split("\\.")[0] + ".gif");
 		
 	}
 	
@@ -152,7 +157,7 @@ public class Map {
 			FileWriter writer = new FileWriter(file);
 			
 			//Write file header
-			writer.write(gamefield.length+":"+gamefield[0].length+System.getProperty("line.separator"));
+			writer.write(gamefield.length+";"+gamefield[0].length+System.getProperty("line.separator"));
 			writer.write(mapName+System.getProperty("line.separator"));
 			writer.write(mapDescription+System.getProperty("line.separator"));
 			
@@ -165,7 +170,7 @@ public class Map {
 			//Write gamefield
 			for (int y = 0; y<gamefield[0].length; y++) {
 				for (int x = 0; x< gamefield.length; x++) {
-					if (x!=0) writer.write(":");
+					if (x!=0) writer.write(";");
 					writer.write(gamefield[x][y].getBid());
 				}
 				writer.write(System.getProperty("line.separator"));
