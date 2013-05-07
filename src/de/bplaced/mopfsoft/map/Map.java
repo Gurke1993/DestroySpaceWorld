@@ -245,4 +245,16 @@ public class Map {
 	public File getPreviewImageFile() {
 		return this.previewImagePath;
 	}
+	
+	public int getHeight() {
+		return this.gamefield[0].length;
+	}
+	
+	public int getWidth() {
+		return this.gamefield.length;
+	}
+	
+	public Block getBlock(int x, int y) {
+		return this.gamefield[x][y];
+	}
 }
