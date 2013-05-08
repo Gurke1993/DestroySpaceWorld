@@ -6,6 +6,8 @@ import de.bplaced.mopfsoft.items.Item;
 
 public class Air extends Block{
 
+	private static Color color;
+
 	public Air(int x, int y) {
 		super(x, y);
 	}
@@ -22,12 +24,16 @@ public class Air extends Block{
 
 	@Override
 	public Color getColor() {
-		return Color.transparent;
+		return Air.color;
 	}
 
 	@Override
 	public int getBid() {
 		return 0;
+	}
+
+	public static void setColor(Color color) {
+		Air.color = color;
 	}
 
 }
