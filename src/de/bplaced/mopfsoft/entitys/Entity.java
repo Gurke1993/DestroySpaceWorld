@@ -7,28 +7,40 @@ import java.util.Map;
 
 import org.newdawn.slick.Image;
 
-import de.bplaced.mopfsoft.blocks.Block;
+import de.bplaced.mopfsoft.map.Direction;
 
 public abstract class Entity {
 	
 	private static final Map<Integer,String> entityMap = setupEntityMap();
+	private static final Map<String, Direction> DIRECTION_MAP = setupDirectionMap();
 	private final int id;
 	private int xOld;
 	private int yOld;
 	private int y;
 	private int x;
-	private final Block[][] gamefield;
+	private final de.bplaced.mopfsoft.map.Map map;
 	
-	public Entity(int id, int x, int y, Block[][] gamefield) {
+	public Entity(int id, int x, int y, de.bplaced.mopfsoft.map.Map map) {
 		this.id = id;
 		this.x = x;
 		this.y = y;
-		this.gamefield = gamefield;
+		this.map = map;
 		
 		this.xOld = x;
 		this.yOld = y;
 	}
 	
+	private static Map<String, Direction> setupDirectionMap() {
+		Map<String, Direction> result = new HashMap<String, Direction>();
+        
+        
+        result.put("left", new Direction(-1,0));
+        result.put("right", new Direction(1,0));
+        result.put("up", new Direction(0,-1));
+        result.put("down", new Direction(0,1));
+		return result;
+	}
+
 	private static Map<Integer, String> setupEntityMap() {
         Map<Integer, String> result = new HashMap<Integer, String>();
         
@@ -71,16 +83,26 @@ public abstract class Entity {
 		this.y = y;
 	}
 	public void move(int x, int y) {
-		this.x += x;
-		this.y += y;
+		this.x += x*getSpeed();
+		this.y += y*getSpeed();
 	}
 	
+	public abstract int getSpeed();
+
+	public void move(String direction) {
+		move(DIRECTION_MAP.get(direction));
+	}
+	
+	private void move(Direction direction) {
+		move(direction.getX(), direction.getY());
+	}
+
 	public int getId() {
 		return this.id;
 	}
 	
 	public boolean hasMoved() {
-		return (xOld == x && yOld == y);
+		return (xOld != x || yOld != y);
 	}
 	
 
@@ -112,16 +134,16 @@ public abstract class Entity {
 	 */
 	private boolean isCollidingWithWorld() {
 		
-		if (gamefield[x][y].getBid() != 0) {
+		if (map.getBlock(x, y).getBid() != 0) {
 			return true;
 		}
-		if (gamefield[x][y+getHeight()].getBid() != 0) {
+		if (map.getBlock(x, y+getHeight()).getBid() != 0) {
 			return true;
 		}
-		if (gamefield[x+getWidth()][y].getBid() != 0) {
+		if (map.getBlock(x+getWidth(), y).getBid() != 0) {
 			return true;
 		}
-		if (gamefield[x+getWidth()][y+getHeight()].getBid() != 0) {
+		if (map.getBlock(x+getWidth(), y+getHeight()).getBid() != 0) {
 			return true;
 		}
 		
@@ -134,17 +156,17 @@ public abstract class Entity {
 	 * @param gamefield
 	 * @return
 	 */
-	public static Entity getNewEntity(String[] args, Block[][] gamefield) {
-		return getNewEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[1]),gamefield);
+	public static Entity getNewEntity(String[] args, de.bplaced.mopfsoft.map.Map map) {
+		return getNewEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]),map);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Entity getNewEntity(int id, int eid, int x, int y, Block[][] gamefield) {
+	public static Entity getNewEntity(int id, int eid, int x, int y, de.bplaced.mopfsoft.map.Map map) {
 		Entity entity = null;
 
-		Object [] args = {id,x,y,gamefield};
+		Object [] args = {id,x,y,map};
 		@SuppressWarnings("rawtypes")
-		Class[] argsClass = new Class[] { int.class, int.class, int.class, Block[][].class };
+		Class[] argsClass = new Class[] { int.class, int.class, int.class, de.bplaced.mopfsoft.map.Map.class };
 		
 		@SuppressWarnings("rawtypes")
 		Constructor argsConstructor;

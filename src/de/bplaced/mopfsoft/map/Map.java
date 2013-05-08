@@ -63,7 +63,7 @@ public class Map {
 			//Read player data
 			String line;
 			while (!(line = reader.readLine()).equalsIgnoreCase("#")){
-				this.entitys.add(Entity.getNewEntity(line.split(","), gamefieldTemp));
+				this.entitys.add(Entity.getNewEntity(line.split(","), this));
 			}
 			
 			//Read gamefield data

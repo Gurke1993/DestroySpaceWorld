@@ -3,18 +3,18 @@ package de.bplaced.mopfsoft.entitys;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
-import de.bplaced.mopfsoft.blocks.Block;
+import de.bplaced.mopfsoft.map.Map;
 
 public class Player extends ItemUser {
 
 	private Image image = null;
 
-	public Player(int id, int x, int y, Block [][] gamefield) {
-		super(id, x, y, gamefield);
+	public Player(int id, int x, int y, Map map) {
+		super(id, x, y, map);
 	}
 
-	public Player(int id, String[] args, Block [][] gamefield) {
-		this(id, Integer.parseInt(args[0]),Integer.parseInt(args[1]),gamefield);
+	public Player(int id, String[] args, Map map) {
+		this(id, Integer.parseInt(args[0]),Integer.parseInt(args[1]),map);
 	}
 
 	@Override
@@ -55,12 +55,16 @@ public class Player extends ItemUser {
 
 	@Override
 	public void prepareImage() {
-		// TODO Auto-generated method stub
 		try {
 			this.image = new Image("de/bplaced/mopfsoft/entitys/Player.gif");
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int getSpeed() {
+		return 1;
 	}
 
 
