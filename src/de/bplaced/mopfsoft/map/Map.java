@@ -15,6 +15,7 @@ import java.util.List;
 import de.bplaced.mopfsoft.blocks.Block;
 import de.bplaced.mopfsoft.entitys.Entity;
 import de.bplaced.mopfsoft.entitys.Player;
+import de.bplaced.mopfsoft.entitys.World;
 
 public class Map {
 	
@@ -23,6 +24,8 @@ public class Map {
 	private final String mapDescription;
 	protected final List<Entity> entitys = new ArrayList<Entity>();
 	private File previewImagePath;
+	private int gravity;
+	private World world;
 	
 
 	private Map (BufferedReader reader) {
@@ -57,6 +60,8 @@ public class Map {
 			mapNameTemp = reader.readLine();
 			mapDescriptionTemp = reader.readLine();
 			
+			gravity = Integer.parseInt(reader.readLine());
+			
 			//Skip empty line
 			reader.readLine();
 			
@@ -90,6 +95,7 @@ public class Map {
 		this.mapDescription = mapDescriptionTemp;
 		this.mapName = mapNameTemp;
 		this.gamefield = gamefieldTemp;
+		this.world = new World(-1, -1, -1, this);
 	}
 	
 	public Map (String mapData) {
@@ -160,6 +166,8 @@ public class Map {
 			writer.write(gamefield.length+";"+gamefield[0].length+System.getProperty("line.separator"));
 			writer.write(mapName+System.getProperty("line.separator"));
 			writer.write(mapDescription+System.getProperty("line.separator"));
+			writer.write(gravity);
+			
 			
 			//Write Player data
 			for (Entity entity: getEntitys()) {
@@ -256,5 +264,17 @@ public class Map {
 	
 	public Block getBlock(int x, int y) {
 		return this.gamefield[x][y];
+	}
+
+	public int getGravity() {
+		return this.gravity;
+	}
+	
+	public void setGravity(int gravity) {
+		this.gravity = gravity;
+	}
+
+	public World getWorld() {
+		return this.world;
 	}
 }

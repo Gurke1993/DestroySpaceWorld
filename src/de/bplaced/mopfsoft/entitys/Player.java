@@ -5,7 +5,7 @@ import org.newdawn.slick.SlickException;
 
 import de.bplaced.mopfsoft.map.Map;
 
-public class Player extends ItemUser {
+public class Player extends ItemUser implements Jumper{
 
 	private Image image = null;
 
@@ -37,13 +37,11 @@ public class Player extends ItemUser {
 
 	@Override
 	public int getHeight() {
-		// TODO Auto-generated method stub
 		return 32;
 	}
 
 	@Override
 	public int getWidth() {
-		// TODO Auto-generated method stub
 		return 16;
 	}
 
@@ -65,6 +63,14 @@ public class Player extends ItemUser {
 	@Override
 	public int getSpeed() {
 		return 1;
+	}
+
+	@Override
+	public void jump() {
+		if (super.isStanding()) {
+			super.verSpeed = -6;
+			this.move(0, -1);
+		}
 	}
 
 

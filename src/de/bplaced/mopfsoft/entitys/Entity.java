@@ -18,6 +18,7 @@ public abstract class Entity {
 	private int yOld;
 	private int y;
 	private int x;
+	protected int verSpeed = 0;
 	private final de.bplaced.mopfsoft.map.Map map;
 	
 	public Entity(int id, int x, int y, de.bplaced.mopfsoft.map.Map map) {
@@ -115,15 +116,17 @@ public abstract class Entity {
 	 * 
 	 */
 	public void resolveWorldCollisions() {
-		if (isCollidingWithWorld()) {
-			//TODO Move torwards intial if possible!!
-			moveToInitialPosition();
+		while (isCollidingWithWorld()) {
+			if (!(xOld==x)) x += (xOld-x)/Math.abs(xOld-x);
+			if (!(yOld==y)) y += (yOld-y)/Math.abs(yOld-y);
+		
 		}
 	}
 
 	/** Resets the entities position to the last known
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private void moveToInitialPosition() {
 		this.x = xOld;
 		this.y = yOld;
@@ -133,17 +136,22 @@ public abstract class Entity {
 	 * @return
 	 */
 	private boolean isCollidingWithWorld() {
-		
+		if (x<0 || x >map.getWidth()-getWidth() || y<0 || y>map.getHeight()-getHeight()) {
+			return true;
+		}
+			
 		if (map.getBlock(x, y).getBid() != 0) {
 			return true;
 		}
-		if (map.getBlock(x, y+getHeight()).getBid() != 0) {
+		if (map.getBlock(x, y+getHeight()-1).getBid() != 0) {
+			this.verSpeed = Math.min(0,verSpeed);
 			return true;
 		}
-		if (map.getBlock(x+getWidth(), y).getBid() != 0) {
+		if (map.getBlock(x+getWidth()-1, y).getBid() != 0) {
 			return true;
 		}
-		if (map.getBlock(x+getWidth(), y+getHeight()).getBid() != 0) {
+		if (map.getBlock(x+getWidth()-1, y+getHeight()-1).getBid() != 0) {
+			this.verSpeed = Math.min(0,verSpeed);
 			return true;
 		}
 		
@@ -185,4 +193,23 @@ public abstract class Entity {
 	    }
 	    return null;
 	  }
+
+	public void applyGravity() {
+		if (!isStanding()) {
+		this.verSpeed +=map.getGravity();
+		this.move(0, verSpeed);
+		}
+	}
+
+	protected boolean isStanding() {
+		if (map.getBlock(x+getWidth()-1, y+getHeight()).getBid() != 0) {
+			this.verSpeed = Math.min(0,verSpeed);
+			return true;
+		}
+		if (map.getBlock(x, y+getHeight()).getBid() != 0) {
+			this.verSpeed = Math.min(0,verSpeed);
+			return true;
+		}
+		return false;
+	}
 }
