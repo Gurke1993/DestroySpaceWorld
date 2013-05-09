@@ -26,10 +26,6 @@ public class World extends Entity{
 	}
 
 	@Override
-	public void prepareImage() {
-	}
-
-	@Override
 	public Image getImage() {
 		return null;
 	}
@@ -41,6 +37,10 @@ public class World extends Entity{
 	@Override
 	public int getSpeed() {
 		return 0;
+	}
+
+	@Override
+	protected void prepareImages() {
 	}
 
 }

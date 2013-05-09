@@ -21,9 +21,12 @@ public abstract class Block {
 	
 	private static final Map<Integer,String> blockMap = setupBlockMap();
 	
+	public static final Block EMPTY = new Empty();
+	
 	private static Map<Integer, String> setupBlockMap() {
         Map<Integer, String> result = new HashMap<Integer, String>();
         
+        result.put(-1, "Empty");
         result.put(0, "Air");
         result.put(1, "Stone");
         result.put(2, "Dirt");

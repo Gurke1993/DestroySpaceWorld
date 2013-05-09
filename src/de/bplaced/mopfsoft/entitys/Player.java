@@ -1,13 +1,16 @@
 package de.bplaced.mopfsoft.entitys;
 
+import java.util.HashMap;
+
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import de.bplaced.mopfsoft.map.Direction;
 import de.bplaced.mopfsoft.map.Map;
 
 public class Player extends ItemUser implements Jumper{
 
-	private Image image = null;
+	private HashMap<Direction,Image> images = new HashMap<Direction,Image>();
 
 	public Player(int id, int x, int y, Map map) {
 		super(id, x, y, map);
@@ -24,15 +27,12 @@ public class Player extends ItemUser implements Jumper{
 
 	@Override
 	public Image getImage() {
-		if (this.image == null)
-		prepareImage();
-		return this.image;
-	}
-
-	@Override
-	public void use(int itemId) {
-		// TODO Auto-generated method stub
 		
+		if (this.images.size() == 0)
+		prepareImages();
+		
+		
+		return this.images.get(getDirection());
 	}
 
 	@Override
@@ -52,9 +52,12 @@ public class Player extends ItemUser implements Jumper{
 	}
 
 	@Override
-	public void prepareImage() {
+	protected void prepareImages() {
 		try {
-			this.image = new Image("de/bplaced/mopfsoft/entitys/Player.gif");
+			this.images.put(Direction.LEFT, new Image("de/bplaced/mopfsoft/entitys/Player_1_left.gif"));
+			this.images.put(Direction.RIGHT, new Image("de/bplaced/mopfsoft/entitys/Player_1_right.gif"));
+			this.images.put(Direction.DOWN, new Image("de/bplaced/mopfsoft/entitys/Player_1_down.gif"));
+			this.images.put(Direction.UP, new Image("de/bplaced/mopfsoft/entitys/Player_1_up.gif"));
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}

@@ -16,9 +16,11 @@ import de.bplaced.mopfsoft.blocks.Block;
 import de.bplaced.mopfsoft.entitys.Entity;
 import de.bplaced.mopfsoft.entitys.Player;
 import de.bplaced.mopfsoft.entitys.World;
+import de.bplaced.mopfsoft.entitys.ItemUser;
 
 public class Map {
 	
+	private int entityCounter = 0;
 	protected final Block[][] gamefield;
 	private final String mapName;
 	private final String mapDescription;
@@ -65,10 +67,23 @@ public class Map {
 			//Skip empty line
 			reader.readLine();
 			
-			//Read player data
+			//Read Entity data
 			String line;
+			String [] lineSplit;
+			Entity entity;
 			while (!(line = reader.readLine()).equalsIgnoreCase("#")){
-				this.entitys.add(Entity.getNewEntity(line.split(","), this));
+				lineSplit = line.split(";")[0].split(",");
+				entity = Entity.getNewEntity(getId(), Integer.parseInt(lineSplit[1]), Integer.parseInt(lineSplit[2]), Integer.parseInt(lineSplit[3]), this);
+				
+				//ItemUser
+				if (entity instanceof ItemUser && line.split(";").length > 1) {
+					for (String iid: line.split(";")[1].split(",")) {
+						((ItemUser) entity).addItem(Integer.parseInt(iid));
+					}
+				}
+					
+				//Add to entity list of the map
+				this.entitys.add(entity);
 			}
 			
 			//Read gamefield data
@@ -144,7 +159,10 @@ public class Map {
 	 * @param newBlock
 	 */
 	public void updateBlock(int x, int y, Block newBlock) {
-		this.gamefield[x][y] = newBlock;
+		if (isInMap(x,y)) {
+			this.gamefield[x][y] = newBlock;
+		}
+
 	}
 
 	/** Saves this map in its current state in a file
@@ -169,7 +187,7 @@ public class Map {
 			writer.write(gravity);
 			
 			
-			//Write Player data
+			//Write Entity data
 			for (Entity entity: getEntitys()) {
 				writer.write(entity+System.getProperty("line.separator"));
 			}
@@ -263,7 +281,14 @@ public class Map {
 	}
 	
 	public Block getBlock(int x, int y) {
+		if (isInMap(x,y))
 		return this.gamefield[x][y];
+		else
+		return Block.EMPTY;
+	}
+	
+	public boolean isInMap(int x, int y){
+		return (x>=0 && y>=0 && x<gamefield.length && y<gamefield[0].length);
 	}
 
 	public int getGravity() {
@@ -276,5 +301,11 @@ public class Map {
 
 	public World getWorld() {
 		return this.world;
+	}
+
+	public int getId() {
+		int id = entityCounter;
+		entityCounter++;
+		return id ;
 	}
 }

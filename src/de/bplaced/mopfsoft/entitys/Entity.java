@@ -16,10 +16,12 @@ public abstract class Entity {
 	private final int id;
 	private int xOld;
 	private int yOld;
-	private int y;
-	private int x;
+	protected int y;
+	protected int x;
 	protected int verSpeed = 0;
-	private final de.bplaced.mopfsoft.map.Map map;
+	protected final de.bplaced.mopfsoft.map.Map map;
+	private Direction direction = Direction.LEFT;
+	private Direction directionOld = Direction.LEFT;
 	
 	public Entity(int id, int x, int y, de.bplaced.mopfsoft.map.Map map) {
 		this.id = id;
@@ -31,14 +33,20 @@ public abstract class Entity {
 		this.yOld = y;
 	}
 	
+	public Entity(int id, int x, int y, de.bplaced.mopfsoft.map.Map map, Direction direction) {
+		this(id,x,y,map);
+		this.direction = direction;
+		this.directionOld = direction;
+	}
+	
 	private static Map<String, Direction> setupDirectionMap() {
 		Map<String, Direction> result = new HashMap<String, Direction>();
         
         
-        result.put("left", new Direction(-1,0));
-        result.put("right", new Direction(1,0));
-        result.put("up", new Direction(0,-1));
-        result.put("down", new Direction(0,1));
+        result.put("left", Direction.LEFT);
+        result.put("right", Direction.RIGHT);
+        result.put("up", Direction.UP);
+        result.put("down", Direction.DOWN);
 		return result;
 	}
 
@@ -54,14 +62,14 @@ public abstract class Entity {
 
 	@Override
 	public String toString() {
-		return getId()+","+getEid()+","+x+","+y;
+		return getId()+","+getEid()+","+x+","+y+","+getDirection();
 	}
 
 
 	public abstract int getHeight();
 	public abstract int getWidth();
 	public abstract int getEid();
-	public abstract void prepareImage();
+	protected abstract void prepareImages();
 	
 	public abstract Image getImage();
 	
@@ -79,13 +87,31 @@ public abstract class Entity {
 	public int getY() {
 		return this.y;
 	}
-	public void set(int x, int y) {
+	public void set(int x, int y, String direction) {
 		this.x = x;
 		this.y = y;
+		this.direction = DIRECTION_MAP.get(direction);
 	}
+	private void updateDirection() {
+		//TODO add up and down!
+		if (!hasMoved()) return;
+		if (x == xOld) {
+			if (y < yOld)
+				direction = Direction.UP;
+			else
+				direction = Direction.DOWN;
+		} else {
+			if (x < xOld)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+		}
+	}
+
 	public void move(int x, int y) {
 		this.x += x*getSpeed();
 		this.y += y*getSpeed();
+		updateDirection();
 	}
 	
 	public abstract int getSpeed();
@@ -101,15 +127,22 @@ public abstract class Entity {
 	public int getId() {
 		return this.id;
 	}
-	
+
+	/**
+	 * Returns true if the player has a new Position (compared to initial
+	 * Position) or if the Player has changed his direction
+	 * 
+	 * @return
+	 */
 	public boolean hasMoved() {
-		return (xOld != x || yOld != y);
+		return (xOld != x || yOld != y || directionOld.compareTo(direction) != 0);
 	}
 	
 
 	public void setInitialPosition() {
 		this.xOld = x;
 		this.yOld = y;
+		this.directionOld = direction;
 	}
 	
 	/** Checks for potential world collisions and tries to resolve them.
@@ -163,10 +196,10 @@ public abstract class Entity {
 	 * @param args
 	 * @param gamefield
 	 * @return
-	 */
-	public static Entity getNewEntity(String[] args, de.bplaced.mopfsoft.map.Map map) {
-		return getNewEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]),map);
-	}
+//	 */
+//	public static Entity getNewEntity(String[] args, de.bplaced.mopfsoft.map.Map map) {
+//		return getNewEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]),map);
+//	}
 	
 	@SuppressWarnings("unchecked")
 	public static Entity getNewEntity(int id, int eid, int x, int y, de.bplaced.mopfsoft.map.Map map) {
@@ -211,5 +244,13 @@ public abstract class Entity {
 			return true;
 		}
 		return false;
+	}
+	
+	public Direction getDirection() {
+		return this.direction;
+	}
+
+	public de.bplaced.mopfsoft.map.Map getMap() {
+		return this.map;
 	}
 }
