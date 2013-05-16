@@ -22,8 +22,8 @@ public class Map {
 	
 	private int entityCounter = 0;
 	protected final Block[][] gamefield;
-	private final String mapName;
-	private final String mapDescription;
+	private String mapName;
+	private String mapDescription;
 	protected final List<Entity> entitys = new ArrayList<Entity>();
 	private File previewImagePath;
 	private int gravity;
@@ -141,6 +141,14 @@ public class Map {
 	 */
 	public String getMapDescription() {
 		return this.mapDescription;
+	}
+	
+	public void setMapName(String name) {
+		this.mapName = name;
+	}
+	
+	public void setMapDescription(String description) {
+		this.mapDescription = description;
 	}
 	
 	
