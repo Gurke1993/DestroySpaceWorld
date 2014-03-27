@@ -36,43 +36,43 @@ public class CustomLogSystem implements LogSystem{
 	@Override
 	public void debug(String msg) {
 		if (loggingLevel >= HIGH)
-			System.out.println(getPrefix()+msg);
+			System.out.println(getPrefix()+"[D] "+msg);
 	}
 
 	@Override
 	public void error(Throwable e) {
 		if (loggingLevel >= LOW)
-			System.out.println(getPrefix()+System.getProperty("line.separator")+e);
+			System.out.println(getPrefix()+"[E] "+System.getProperty("line.separator")+e);
 	}
 
 	@Override
 	public void error(String msg) {
 		if (loggingLevel >= LOW)
-			System.out.println(getPrefix()+msg);
+			System.out.println(getPrefix()+"[E] "+msg);
 	}
 
 	@Override
 	public void error(String msg, Throwable e) {
 		if (loggingLevel >= LOW)
-			System.out.println(getPrefix()+msg+System.getProperty("line.separator")+e);
+			System.out.println(getPrefix()+"[E] "+msg+System.getProperty("line.separator")+e);
 	}
 
 	@Override
 	public void info(String msg) {
 		if (loggingLevel >= LOW)
-			System.out.println(getPrefix()+msg);
+			System.out.println(getPrefix()+"[I] "+msg);
 	}
 
 	@Override
 	public void warn(String msg) {
 		if (loggingLevel >= MEDIUM)
-			System.out.println(getPrefix()+msg);
+			System.out.println(getPrefix()+"[W] "+msg);
 	}
 
 	@Override
 	public void warn(String msg, Throwable e) {
 		if (loggingLevel >= MEDIUM)
-			System.out.println(getPrefix()+msg+System.getProperty("line.separator")+e);
+			System.out.println(getPrefix()+"[W] "+msg+System.getProperty("line.separator")+e);
 	}
 
 }
