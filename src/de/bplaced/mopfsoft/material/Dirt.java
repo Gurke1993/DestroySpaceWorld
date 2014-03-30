@@ -1,4 +1,4 @@
-package de.bplaced.mopfsoft.blocks;
+package de.bplaced.mopfsoft.material;
 
 import org.newdawn.slick.Color;
 
@@ -7,8 +7,7 @@ import de.bplaced.mopfsoft.items.Item;
 
 public class Dirt extends Massive{
 
-	public Dirt(int x, int y) {
-		super(x, y);
+	public Dirt() {
 	}
 
 	@Override
@@ -29,7 +28,7 @@ public class Dirt extends Massive{
 	}
 
 	@Override
-	public int getBid() {
+	public int getMid() {
 		return 2;
 	}
 

@@ -1,4 +1,4 @@
-package de.bplaced.mopfsoft.blocks;
+package de.bplaced.mopfsoft.material;
 
 import org.newdawn.slick.Color;
 
@@ -6,9 +6,6 @@ import de.bplaced.mopfsoft.items.Item;
 
 public class Stone extends Massive{
 
-	public Stone(int x, int y) {
-		super(x, y);
-	}
 
 	@Override
 	public int getStrength(Item item) {
@@ -29,7 +26,7 @@ public class Stone extends Massive{
 	}
 
 	@Override
-	public int getBid() {
+	public int getMid() {
 		// TODO Auto-generated method stub
 		return 1;
 	}

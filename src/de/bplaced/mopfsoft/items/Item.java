@@ -8,7 +8,6 @@ import java.util.Map;
 
 import de.bplaced.mopfsoft.entitys.ItemUser;
 import de.bplaced.mopfsoft.gamechanges.GameChange;
-
 public abstract class Item {
 	
 	protected ItemUser owner;

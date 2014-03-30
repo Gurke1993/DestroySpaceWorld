@@ -1,15 +1,11 @@
-package de.bplaced.mopfsoft.blocks;
+package de.bplaced.mopfsoft.material;
 
 import org.newdawn.slick.Color;
 
 import de.bplaced.mopfsoft.items.Item;
 
-public class Empty extends Block {
+public class Empty extends Material {
 
-
-	public Empty() {
-		super(-1, -1);
-	}
 
 	@Override
 	public int getStrength(Item item) {
@@ -27,7 +23,7 @@ public class Empty extends Block {
 	}
 
 	@Override
-	public int getBid() {
+	public int getMid() {
 		return -1;
 	}
 

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
+
 
 import de.bplaced.mopfsoft.map.Direction;
 
@@ -169,26 +172,23 @@ public abstract class Entity {
 	 * @return
 	 */
 	private boolean isCollidingWithWorld() {
+		
+		
 		if (x<0 || x >map.getWidth()-getWidth() || y<0 || y>map.getHeight()-getHeight()) {
 			return true;
-		}
 			
-		if (map.getBlock(x, y).getBid() != 0) {
-			return true;
-		}
-		if (map.getBlock(x, y+getHeight()-1).getBid() != 0) {
-			this.verSpeed = Math.min(0,verSpeed);
-			return true;
-		}
-		if (map.getBlock(x+getWidth()-1, y).getBid() != 0) {
-			return true;
-		}
-		if (map.getBlock(x+getWidth()-1, y+getHeight()-1).getBid() != 0) {
-			this.verSpeed = Math.min(0,verSpeed);
-			return true;
 		}
 		
-		return false;
+
+		Shape entityShape = new Rectangle(x,y, getWidth(), getHeight());
+		Shape collidingShape = map.collidesWithEnvironment(entityShape);
+		
+		if (collidingShape == null)
+			return false;
+			
+		if (collidingShape.includes(x, y+getHeight()-1) || collidingShape.includes(x+getWidth()-1, y+getHeight()-1))
+			this.verSpeed = Math.min(0,verSpeed);
+		return true;
 	}
 	
 	
@@ -235,15 +235,17 @@ public abstract class Entity {
 	}
 
 	protected boolean isStanding() {
-		if (map.getBlock(x+getWidth()-1, y+getHeight()).getBid() != 0) {
-			this.verSpeed = Math.min(0,verSpeed);
-			return true;
-		}
-		if (map.getBlock(x, y+getHeight()).getBid() != 0) {
+		Shape entityShape = new Rectangle(x,y, getWidth(), getHeight());
+		Shape collidingShape = map.collidesWithEnvironment(entityShape);
+		
+		if (collidingShape == null) 
+			return false;
+		if (y+getHeight()>map.getHeight() || collidingShape.includes(x, y+getHeight()-1) || collidingShape.includes(x+getWidth()-1, y+getHeight()-1)) {
 			this.verSpeed = Math.min(0,verSpeed);
 			return true;
 		}
 		return false;
+		
 	}
 	
 	public Direction getDirection() {

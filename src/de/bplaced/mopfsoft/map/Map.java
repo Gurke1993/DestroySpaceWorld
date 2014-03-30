@@ -10,21 +10,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
-import de.bplaced.mopfsoft.blocks.Block;
+import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.util.Log;
+
+import util.Util;
+
 import de.bplaced.mopfsoft.entitys.Entity;
 import de.bplaced.mopfsoft.entitys.Player;
 import de.bplaced.mopfsoft.entitys.World;
 import de.bplaced.mopfsoft.entitys.ItemUser;
+import de.bplaced.mopfsoft.material.Air;
+import de.bplaced.mopfsoft.material.Material;
 
 public class Map {
 	
 	private int entityCounter = 0;
-	protected final Block[][] gamefield;
 	private String mapName;
 	private String mapDescription;
+	protected Shape eMax;
 	protected final List<Entity> entitys = new ArrayList<Entity>();
+	protected java.util.Map<Shape,Material> environment = new HashMap<Shape,Material>();
 	private File previewImagePath;
 	private int gravity;
 	private World world;
@@ -44,7 +56,6 @@ public class Map {
 		
 		//Initialize Temp variables
 		String mapNameTemp = null, mapDescriptionTemp = null;
-		Block[][] gamefieldTemp = null;
 		
 		
 		// Start loading the map
@@ -54,11 +65,8 @@ public class Map {
 			String topLine;
 			while((topLine = reader.readLine()) == null) {
 			}
-			
-			int xMax = Integer.parseInt(topLine.split(";")[0]);
-			int yMax = Integer.parseInt(topLine.split(";")[1]);
-			gamefieldTemp = new Block[xMax][yMax];
-			
+			eMax = new Rectangle(0,0,Integer.parseInt(topLine.split(";")[0]),Integer.parseInt(topLine.split(";")[1]));
+
 			mapNameTemp = reader.readLine();
 			mapDescriptionTemp = reader.readLine();
 			
@@ -87,32 +95,43 @@ public class Map {
 			}
 			
 			//Read gamefield data
-			int x;
-			int y = 0;
+			this.environment = new HashMap<Shape,Material>();
+			String shape, location;
+			Polygon p;
+			while ((line = reader.readLine())!= null) {
+				shape = line.split(";")[1];
+				location = line.split(";")[2];
+				float[] points = new float[shape.split(",").length];
+				for (int i = 0; i< shape.split(",").length; i++) {
+					points[i] = Float.parseFloat(shape.split(",")[i]);
+				}
+				p =  new Polygon(points);
+				p.setLocation(Float.parseFloat(location.split(",")[0]), Float.parseFloat(location.split(",")[1]));
+				environment.put(p, Material.getNewMaterial(Integer.parseInt(line.split(";")[0])));
+			}
+			
+			
 			
 			while ((line = reader.readLine())!= null) {
-				x = 0;
-				for (String id: line.split(";")) {
-					gamefieldTemp[x][y] = Block.getNewBlock(x,y,Integer.parseInt(id));
-					x++;
-				}
-				y++;
+				updateBlocks(line.split(";")[1], Integer.parseInt(line.split(";")[0]));
 			}
 			
 			//Close readers
 			reader.close();
 			
 		} catch (Exception e) {
-			System.out.println("[ERROR] Could not load gamefield data!");
+			Log.error("Could not load gamefield data!");
 			e.printStackTrace();
 		}
 		
 		this.mapDescription = mapDescriptionTemp;
 		this.mapName = mapNameTemp;
-		this.gamefield = gamefieldTemp;
 		this.world = new World(-1, -1, -1, this);
 	}
 	
+	public java.util.Map <Shape,Material> getEnvironment(){
+		return environment;
+	}
 	public Map (String mapData) {
 		this(new BufferedReader(new StringReader(mapData)));
 	}
@@ -151,26 +170,37 @@ public class Map {
 		this.mapDescription = description;
 	}
 	
-	
-	/** Changes the block at the specified coordinates to a new block of the id
-	 * @param x
-	 * @param y
-	 * @param newId
-	 */
-	public void updateBlock(int x, int y, int newId) {
-		updateBlock(x,y,Block.getNewBlock(x, y, newId));
-	}
-		
-	/** Changes the block at the specified coordinates to the specified block
-	 * @param x
-	 * @param y
-	 * @param newBlock
-	 */
-	public void updateBlock(int x, int y, Block newBlock) {
-		if (isInMap(x,y)) {
-			this.gamefield[x][y] = newBlock;
+	public Shape collidesWithEnvironment(Shape shape) {
+		if (shape.getMinX()<0 || shape.getMaxX() >getWidth() || shape.getMinY()<0 || shape.getMaxY()>getHeight()) {
+			return new Point(-1,-1);	
 		}
-
+		
+		for (Shape enShape: environment.keySet()) {
+			if (enShape.intersects(shape)) {
+				return enShape;
+			}
+		}
+		return null;
+	}
+	
+	public void updateBlocks(Shape shape, Material material) {
+		java.util.Map<Shape,Material> newEnvironment = new HashMap<Shape,Material>();
+		for (Entry<Shape,Material> entry: environment.entrySet()) {
+			for (Shape newObject: entry.getKey().subtract(shape)) {
+				newEnvironment.put(newObject, entry.getValue());
+			}
+		}
+		if (!(material instanceof Air))
+			newEnvironment.put(shape, material);
+		this.environment = newEnvironment;
+	}
+	
+	public void updateBlocks(String shape, int newId) {
+		float[] points = new float[shape.split(",").length];
+		for (int i = 0; i< shape.split(",").length; i++) {
+			points[i] = Float.parseFloat(shape.split(",")[i]);
+		}
+		updateBlocks(new Polygon(points),Material.getNewMaterial(newId));
 	}
 
 	/** Saves this map in its current state in a file
@@ -189,7 +219,7 @@ public class Map {
 			FileWriter writer = new FileWriter(file);
 			
 			//Write file header
-			writer.write(gamefield.length+";"+gamefield[0].length+System.getProperty("line.separator"));
+			writer.write(eMax.getWidth()+";"+eMax.getHeight()+System.getProperty("line.separator"));
 			writer.write(mapName+System.getProperty("line.separator"));
 			writer.write(mapDescription+System.getProperty("line.separator"));
 			writer.write(gravity);
@@ -201,20 +231,15 @@ public class Map {
 			}
 			
 			
-			//Write gamefield
-			for (int y = 0; y<gamefield[0].length; y++) {
-				for (int x = 0; x< gamefield.length; x++) {
-					if (x!=0) writer.write(";");
-					writer.write(gamefield[x][y].getBid());
-				}
-				writer.write(System.getProperty("line.separator"));
+			//Write Environment
+			for (Entry<Shape,Material> entry: environment.entrySet()) {
+				writer.write(entry.getValue().getMid()+";"+Util.getArrayAsString(entry.getKey().getPoints(), ","));
 			}
 			
 			writer.close();
 			
 		} catch (IOException e) {
-			System.out.println("[ERROR] Could not save this map in "+file.getPath()+"!");
-			e.printStackTrace();
+			Log.error("Could not save this map in "+file.getPath()+"!",e);
 		}
 		
 	}
@@ -230,7 +255,7 @@ public class Map {
 				
 				new File("maps").mkdirs();
 				
-				System.out.println("Creating new DefaultMap...");
+				Log.info("Creating new DefaultMap...");
 				file.createNewFile();
 				
 				InputStream is = Map.class.getClass().getResourceAsStream(
@@ -280,23 +305,20 @@ public class Map {
 		return this.previewImagePath;
 	}
 	
-	public int getHeight() {
-		return this.gamefield[0].length;
-	}
 	
-	public int getWidth() {
-		return this.gamefield.length;
-	}
-	
-	public Block getBlock(int x, int y) {
-		if (isInMap(x,y))
-		return this.gamefield[x][y];
-		else
-		return Block.EMPTY;
+	public Material getMaterial(int x, int y) {
+		if (isInMap(x,y)) {
+			for (Shape shape: environment.keySet()) {
+				if (shape.contains(x, y)) {
+					return environment.get(shape);
+				}
+			}
+		}
+		return Material.EMPTY;
 	}
 	
 	public boolean isInMap(int x, int y){
-		return (x>=0 && y>=0 && x<gamefield.length && y<gamefield[0].length);
+		return (x>=0 && y>=0 && x<eMax.getWidth() && y<eMax.getHeight());
 	}
 
 	public int getGravity() {
@@ -315,5 +337,13 @@ public class Map {
 		int id = entityCounter;
 		entityCounter++;
 		return id ;
+	}
+
+	public int getWidth() {
+		return (int) eMax.getWidth();
+	}
+	
+	public int getHeight() {
+		return (int) eMax.getHeight();
 	}
 }
